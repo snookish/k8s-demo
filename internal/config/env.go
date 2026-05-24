@@ -19,18 +19,22 @@ func getEnvIntOrFallback(key string, fallback int) int {
 }
 
 func getEnvOrFallback(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
+	if value, ok := os.LookupEnv(key); value != "" && ok {
 		return value
 	}
 	return fallback
 }
 
 func getDurationOrFallback(key, fallback string) time.Duration {
-	if value := os.Getenv(key); value != "" {
+	if value, ok := os.LookupEnv(key); value != "" && ok {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration
 		}
 	}
-	duration, _ := time.ParseDuration(fallback)
+
+	duration, err := time.ParseDuration(fallback)
+	if err != nil {
+		return time.Duration(0)
+	}
 	return duration
 }
